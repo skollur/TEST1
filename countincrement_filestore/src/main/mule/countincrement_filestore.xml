@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="6b1f6a2f-ddc9-4e0c-9691-6ac65d8236f9" >
+		<file:connection />
+	</file:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f72f892c-aefa-4876-be23-afee6845edbd" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="countincrement_filestoreFlow" doc:id="9864860c-e17d-4fa3-a04e-96b12a19986c" >
+		<http:listener doc:name="Listener" doc:id="127e29bf-0217-464e-a3b5-9ba94e5e7a3e" config-ref="HTTP_Listener_config" path="/testFileApp"/>
+		<try doc:name="Try" doc:id="986db22a-1c7d-4ff0-964b-08b5544bfb22" >
+			<file:read doc:name="Read" doc:id="c3072309-b889-4476-b2c8-421a5523979b" config-ref="File_Config" path="${mule.home}\apps\${app.name}\src\main\resources\FileData\data.txt" />
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="04b5d7af-2c79-41db-aabf-41cd2249fc87" type="ANY">
+					<file:write doc:name="Write" doc:id="a1424ab8-866b-4f3d-a4c0-5d60288b551a" mode="CREATE_NEW" path="${mule.home}\apps\${app.name}\src\main\resources\FileData\data.txt">
+						<file:content ><![CDATA[#[0]]]></file:content>
+					</file:write>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<logger level="INFO" doc:name="Logger" doc:id="df2e7572-16b4-4e06-9ef6-5bc15fd1f0cd" message="Retrieve Data from file : #[payload]" />
+		<ee:transform doc:name="Transform Message" doc:id="218aadcf-d8ad-4b3e-8bb2-80d151ca8af5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload + 1]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<file:write doc:name="Write" doc:id="6556a7b7-ff59-4528-bffd-2050bb91c80e" config-ref="File_Config" path="${mule.home}\apps\${app.name}\src\main\resources\FileData\data.txt"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8229175a-e94f-48f1-b71d-1e6e9e52edbf" message="Final Count : #[payload]" />
+	</flow>
+</mule>
