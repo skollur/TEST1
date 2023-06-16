@@ -17,6 +17,8 @@
 
 		<app.runtime>4.2.0-20211222</app.runtime>
 		<mule.maven.plugin.version>3.3.5</mule.maven.plugin.version>
+	      <sonar.organization>skollur</sonar.organization>
+  <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 
 	<build>
