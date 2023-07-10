@@ -1,5 +1,5 @@
-		<logger level="INFO" doc:name="Logger" doc:id="0864db8f-6ee9-4b5e-b1bd-5d161ca6fa08" message='#[%dw 2.0
+%dw 2.0
 import * from dw::core::Strings
 output application/json
 ---
-if(!(sizeOf(payload.message)&lt;= 6)) repeat("*",(sizeOf(payload.message)-6)) ++ payload.message[sizeOf(payload.message)-6 to -1]  else payload.message]'/>
+if(!isEmpty(payload.creditcardNo) and !(sizeOf(payload.creditcardNo)<= 6)) repeat("*",(sizeOf(payload.creditcardNo)-6)) ++ payload.creditcardNo[sizeOf(payload.creditcardNo)-6 to -1]  else payload.creditcardNo
